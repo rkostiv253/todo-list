@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+{% load tz %}
+
+{% block content %}
+  <h1>
+    Todo list
+    <a href="{% url 'app:task-create' %}" class="btn btn-primary"; style="float: right;
+    margin-top: 10px; margin-right: 50px;">
+      Add task
+    </a>
+  </h1>
+  <br>
+
+  {% if task_list %}
+      {% for task in task_list %}
+        {% timezone "UTC" %}
+        {% now "Y-m-d" as today %}
+      <hr>
+          <h5>
+            <strong style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">
+              {{ task.content }}
+            </strong>
+            <span
+                {% if task.status == True %} style="color: green"
+                {% elif task.status == False %} style="color: red"
+                {% endif %}
+            >
+              {{ task.get_status_display }}
+             <form action="{% url 'app:task-toggle' task.pk %}" method="post" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit"
+              class="btn {% if task.status %}btn-secondary{% else %}btn-success{% endif %}" style="float:right;
+              margin-right: 50px;">
+        {% if task.status == False %}Complete{% else %}Undo{% endif %}
+      </button>
+    </form>
+            </span>
+          </h5>
+          <p>Created: {{ task.created_at }}</p>
+          <p><span {% if task.status == True %}
+            class="text"
+          {% elif task.deadline|date:"Y-m-d" == today %}
+          style="background-color: yellow; display: inline-block;"
+        {% elif task.deadline|date:"Y-m-d" < today %}
+          style="background-color: red; color: white; display: inline-block;" {% endif %}>Deadline: {{ task.deadline }}
+          </span></p>
+          <p>Tags: {{ tag.task.tags }}
+         {% for tag in task.tags.all %}
+            {{tag.name}}
+    {% endfor %}
+          <p></p><a href="{% url 'app:task-update' pk=task.id %}" class="btn btn-secondary link-to-page">
+            Update task
+          </a>
+          <a href="{% url 'app:task-delete' pk=task.id %}" class="btn btn-danger link-to-page">
+            Delete task
+          </a>
+          </p>
+    {% endtimezone %}
+    {% endfor %}
+  {% else %}
+      <p>There are no tasks</p>
+  {% endif %}
+{% endblock %}
