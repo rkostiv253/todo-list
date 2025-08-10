@@ -38,13 +38,20 @@
             </span>
           </h5>
           <p>Created: {{ task.created_at }}</p>
-          <p><span {% if task.status == True %}
-            class="text"
-          {% elif task.deadline|date:"Y-m-d" == today %}
-          style="background-color: yellow; display: inline-block;"
-        {% elif task.deadline|date:"Y-m-d" < today %}
-          style="background-color: red; color: white; display: inline-block;" {% endif %}>Deadline: {{ task.deadline }}
-          </span></p>
+          <p>
+          {% if task.deadline %}
+            <span
+                {% if task.status == True %}
+                  class="text"
+                {% elif task.deadline|date:"Y-m-d" == today %}
+                  style="background-color: yellow; display: inline-block;"
+                {% elif task.deadline|date:"Y-m-d" < today %}
+                  style="background-color: red; color: white; display: inline-block;" {% endif %}
+            >
+              Deadline: {{ task.deadline }}
+            </span>
+          {% endif %}
+          </p>
           <p>Tags: {{ tag.task.tags }}
          {% for tag in task.tags.all %}
             {{tag.name}}
